@@ -1,0 +1,39 @@
+p,h1,h2,h3,h4,h5,h6,ul,ol,dl,dd,pre{
+	margin:0;
+	padding:0;
+	list-style:none;
+}
+body{
+	margin:0;
+	color:#5a5a5a;
+	background-color:#fff;
+	font-size:12px;
+    font-family:"Microsoft YaHei";
+}
+/*设置 页面中  a元素的默认样式*/
+a{
+	color:#808080;
+	text-decoration:none;
+	outline:none;
+}
+a:hover{
+	color:#333;
+}
+a:link a:visited{
+  text-decoration:none;
+  color:#5a5a5a;
+}
+img{
+	vertical-align:bottom;
+	margin:0;
+	padding:0;
+}
+.clear:after{
+	content:"";
+	display:block;
+	clear:both;
+}
+.main{
+	width:960px;
+	margin:0 auto;
+}

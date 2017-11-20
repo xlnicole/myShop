@@ -1,0 +1,108 @@
+body{
+  width:1350px;
+  overflow-x:hidden;
+  font-family: "Microsoft YaHei";
+  margin:0 auto;
+  font-size:14px;
+  color:#808080;
+}
+#header{
+  width:1200px;
+  height:105px;
+  box-sizing:border-box;
+  margin:0 auto;
+  padding:15px 0 10px 0;
+}
+#header img{
+  width:60px;
+}
+#header span{
+  display:inline-block;
+  font-size:30px;
+  font-weight:bold;
+  line-height:200%;
+  margin-left:10px;
+  letter-spacing:3.5px;
+}
+#login{
+  width:100%;
+  margin:0 auto;
+  margin-bottom:60px;
+  position:relative;
+}
+#login img{
+  width:100%;
+  margin:0 auto;
+}
+#login .dl{
+  width:340px;
+  height:360px;
+  margin:0 auto;
+  position:absolute;
+  top:71px;
+  right:165px;
+  background-color:#fdeaf0;
+  box-sizing:border-box;
+  padding:40px 30px;
+}
+#login .dl .bt{
+  font-size:18px;
+  margin-right:72px;
+  color:#7b7b7b;
+}
+#login .dl .use{
+  display:block;
+  margin:30px 0;
+  color:#3C3C3C;
+  width:280px;
+  height:40px;
+  box-sizing:border-box;
+  padding:0 10px;
+}
+#login .dl .use:focus{
+  outline-color:#ff86bb;
+}
+#login .dl .btn{
+  display:block;
+  margin:30px 0;
+  color:#7b7b7b;
+  width:280px;
+  height:40px;
+  box-sizing:border-box;
+  background-color:#FF7EB7;
+  border-style:none;
+  border-radius:2px;
+  color:#fff;
+}
+#login .dl .btn:focus{
+  outline-color:#ff86bb;
+}
+#login .dl .wj{
+  margin-left:10px;
+}
+#login a:hover{
+  color:#ff86bb;
+}
+
+.hr1{
+  border:0.5px solid #5a5a5a;
+  opacity:0.2;
+  padding:0;
+}
+#footer3{
+  width:100%;
+  height:70px;
+  margin:0 auto;
+  text-align:center;
+  font-size:14px;
+  margin-top:15px;
+  line-height:180%;
+}
+#footer4{
+  width:680px;
+  height:40px;
+  margin:0 auto;
+  display:flex;
+  justify-content:space-between;
+  flex-wrap:wrap;
+}

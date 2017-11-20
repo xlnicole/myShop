@@ -1,0 +1,169 @@
+var head = document.getElementsByTagName('HEAD').item(0);
+var style = document.createElement('link');
+style.href = relativeToAbsoluteURL('plugin/tb_shopping_cart/css/tb_shopping_cart.css');
+style.rel = 'stylesheet';
+style.type = 'text/css';
+head.appendChild(style);
+
+function tb_shopping_cart_initFrame(frame,contentClass,height){	
+	var self = frame,bh = self.contentWindow.document.body.scrollHeight,
+	dh = self.contentWindow.document.documentElement.scrollHeight,max = Math.max;
+	
+	var $parent = $(self).closest('.wp-floatpanel_dialog'),otherh = 0,temph = max(bh,dh);
+	temph+=1;
+	if($.browser.msie){
+		temph = temph+25;
+	}
+	$parent.find('.'+contentClass).siblings().each(function(i,dom){
+		otherh += $(dom).outerHeight(true);
+	});
+
+	var _float = function(numString){
+		var number = parseFloat(numString);
+		if(isNaN(number)) return 0;
+		return number;
+	};
+	var winheight=window.innerHeight || self.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+	winheight-=39;
+	var seth = _float(height),maxh = seth ? seth : max(winheight,200),
+	difw = maxh - otherh - 10;// 上下间隔5像素
+	if(difw < temph) temph = difw;
+	frame.height = max(temph,200);
+}
+function shopping_cart_initFrame(frame,contentClass,height){	
+	var self = frame,bh = self.contentWindow.document.body.scrollHeight,
+	dh = self.contentWindow.document.documentElement.scrollHeight,max = Math.max;
+	
+	var $parent = $(self).closest('.wp-floatpanel_dialog'),otherh = 0,temph = max(bh,dh);
+	temph+=1;
+	if($.browser.msie){
+		temph = temph+25;
+	}
+	$parent.find('.'+contentClass).siblings().each(function(i,dom){
+		otherh += $(dom).outerHeight(true);
+	});
+
+	var _float = function(numString){
+		var number = parseFloat(numString);
+		if(isNaN(number)) return 0;
+		return number;
+	};
+	var winheight=window.innerHeight || self.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+	winheight-=39;
+	var seth = _float(height),maxh = seth ? seth : max(winheight,200),
+	difw = maxh - otherh - 10;// 上下间隔5像素
+	if(difw < temph) temph = difw;
+	frame.height = max(temph,200);
+}
+
+//购物车弹出层
+function wp_shoppingcart_position(dom,width,height,overlayid){
+	if(dom instanceof jQuery == false) return;
+	var $target = dom,/*$win = $(window),*/tpw = $target.outerWidth(true),tph = $target.outerHeight(true),
+	floor = Math.floor,rgx = /^\d+$/i,ocs = {};
+	// Parse
+	if(rgx.test(height)) tph = height;
+	tpw = Math.max(tpw,width);
+	var wnw = window.innerWidth || self.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
+	wnh = window.innerHeight || self.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+	pllt = floor((wnw - tpw)/2);
+	// Overlay
+	$('#'+overlayid).width(wnw).height(wnh);
+	// Panel
+	ocs['left'] = pllt+'px';
+	ocs['top'] = '-3px';
+	$target.css(ocs);
+}
+
+(function(window){
+	
+	/**
+	 * Float对话框
+	 * (String)load_url - 加载的地址
+	 * (Object)option - 配置项(title|titlebg|contentClass|id|width|height|left|top|isCenter|overlay|showBottom|zIndex|open|close)
+	 */
+	function wp_shoppingCart(load_url,option){
+		var config = $.extend({},{
+			width: 286,
+			height: 'auto',
+			left: 5
+		},option||{});
+		var load_url = load_url+'&m_r='+Math.random();
+		// Remove old panel
+		var pnl,$pnl,wp_timer,id = 'shopping_cart-items';
+		var rgx = /^\d+$/i,plw = config.width,plh = config.height,cc = 'wp-new-cart-windows-content',z = 1001;
+		
+		// Init overlay
+		var ols = '';
+		var $overlay = $('#wp-floatpanel_overlay');
+		if($overlay.size() > 0) $overlay.remove();
+		ols = '<div id="wp-floatpanel_overlay" style="z-index:'+z+';"></div>';
+		z += 1;
+		
+		// Loading area
+		var $tmpwin = $(window),$load = $('#wp-floatpanel_loading'),loadstr = '<div id="wp-floatpanel_loading" style="z-index:'+(z-1)+';"><img src="'+relativeToAbsoluteURL('template/default/images/loading.gif')+'" width="16" height="16" /></div>';
+		if($load.size() > 0) $load.remove();
+		
+		// Create panel
+		var superid = $.options ? $.options.superid : 0;
+		var $ap = $('<div id="'+id+'" class="" style="background:none;box-shadow:none;display:none;position:absolute;z-index:'+z+';"><div class="wp-new-cart-close"><a class="wp-shopping_cart-close" href="javascript:void(0);"></a></div><div class="wp-new-cart-windows-top"></div>'
+				+'<div class="'+cc+'"></div><div class="wp-new-cart-windows-bottom"></div></div>'+ols+loadstr).appendTo('body');
+		pnl = $ap[0];$pnl = $(pnl);
+		// Loading position
+		var winWidth = $tmpwin.width(),pnlWidth = $pnl.width();
+		$('#wp-floatpanel_loading').width(winWidth).height($tmpwin.height());
+		
+		// Events
+		$pnl.bind('wpdialogclose',function(e){
+			$pnl = {};// 注销$pnl对象
+			clearTimeout(wp_timer);
+			var dom = $(e.target);
+			dom = dom.add('#wp-floatpanel_overlay');
+			if($.isFunction(config.close)) config.close(dom[0]);
+			$(document).trigger('click');//IE8中无法移除cstselect插件的div.wp-diy-selected-content
+			return dom.add('#wp-floatpanel_loading').remove();
+		});
+		
+		// Load content
+		$.Deferred(function(dtd){
+			// Modal setting
+			var frmw = plw - 26/*左右padding值为2*13px*/,frame = '<div class="wp-iframe_beforloaded"><img src="'+relativeToAbsoluteURL('template/default/images/loading.gif')+'" width="16" height="16" /></div>'
+				+'<iframe style="background-color:transparent;" allowtransparency="true" id="'+id+'_frame" name="'+id+'_frame" frameborder="0" src="'+load_url+'" scrolling="auto" width="'+frmw+'" onload="this.height=200;$(\'.wp-iframe_beforloaded\',\'#'+id+'\').remove();tb_shopping_cart_initFrame(this,\''+cc+'\',\''+plh+'\');"></iframe>';
+				dtd.resolve(frame);
+			return dtd.promise();
+		}).done(function(data){
+			$('#wp-floatpanel_loading').remove();
+			// Append innerHTML
+			var ocs = {};
+			var cccdiv=$('.'+cc,pnl);
+			cccdiv.html(data);
+			if(rgx.test(plw)) ocs['width'] = plw+'px';
+			if(rgx.test(plh)) ocs['height'] = plh+'px';
+			// Reset position
+			$pnl.show().css(ocs);
+			wp_timer = setTimeout(function(){
+				$pnl.triggerHandler('wpdialogsetpos');
+				cccdiv.find('.wp-iframe_beforloaded').width(cccdiv.width()-45).height(cccdiv.height());
+			},30);
+			// Bind window resize
+			$(window).resize(function(){
+				wp_shoppingcart_position($pnl,plw,plh,'wp-floatpanel_overlay');
+			});
+			$pnl.bind('wpdialogsetpos',function(e){
+				wp_shoppingcart_position($pnl,plw,plh,'wp-floatpanel_overlay');
+			});
+		}).fail(function(){
+			wp_alert(config.title+"(deferred fail).<br/>"+translate('Request failed!')); 
+			$pnl.triggerHandler('wpdialogclose');
+			return false;
+		});
+		// Bind close events
+		$('.wp-shopping_cart-close',pnl).bind('click',function(e){
+			$pnl.triggerHandler('wpdialogclose');
+			// IE下禁止触发onbeforeunload
+			e.preventDefault();
+		});
+		return null;
+	}
+	if(!$.isFunction(window.wp_shoppingCart)) window.wp_shoppingCart = wp_shoppingCart;
+})(window);
